@@ -1,45 +1,39 @@
-#include "holberton.h"
+#include "main.h"
 
 /**
- * read_textfile - reads a text file and prints it to the POSIX standard output
- * @filename: pointer to the file name
- * @letters: the number of letters it should read and print
- * Return:  the actual number of letters it could read and print
-*/
-
-ssize_t read_textfile(const char *filename, size_t letters)
+ * append_text_to_file - appends text at the end of a file
+ * @filename: filename.
+ * @text_content: added content.
+ *
+ * Return: 1 if the file exists. -1 if the fails does not exist
+ * or if it fails.
+ */
+int append_text_to_file(const char *filename, char *text_content)
 {
+	int fd;
+	int nletters;
+	int rwr;
 
-int file;
-ssize_t rcount, wcount;
-char *buffer;
+	if (!filename)
+		return (-1);
 
-if (filename == NULL)
-	return (0);
+	fd = open(filename, O_WRONLY | O_APPEND);
 
-file = open(filename, O_RDWR);
-if (file == -1)
-	return (0);
+	if (fd == -1)
+		return (-1);
 
-buffer = malloc(sizeof(char) * letters);
-if (buffer == NULL)
-{
-	free(buffer);
-	return (0);
-}
+	if (text_content)
+	{
+		for (nletters = 0; text_content[nletters]; nletters++)
+			;
 
-rcount = read(file, buffer, letters);
-if (rcount == -1)
-	return (0);
+		rwr = write(fd, text_content, nletters);
 
-wcount = write(STDOUT_FILENO, buffer, rcount);
+		if (rwr == -1)
+			return (-1);
+	}
 
-if (wcount == -1 || rcount != wcount)
-	return (0);
+	close(fd);
 
-free(buffer);
-
-close(file);
-
-return (wcount);
+	return (1);
 }
